@@ -1,0 +1,14 @@
+# Mulle i hulen
+
+For Mulle to get access to the secret lair for the boys club Zappa, he has to log in to his account with the very secret password.
+Yes, it's something you can eat 🐌🐌🐌
+
+## How to run locally
+
+1. Clone the repo: `git clone https://github.com/danskode/mulle_i_hulen.git`
+2. `cd client`
+3. `npm i`
+4. `cd ..`
+5. `cd server`
+6. `npm i`
+7. Run the command `npm run dev` from the root folder and concurrently and the script will take care of starting both **client** and **server**.
