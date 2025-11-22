@@ -2,7 +2,7 @@
 
 A login system with focus on authentication and authorization.
 
-![Du vil vel godt være med i hulen, Mulle?](client/public/images/favicons/favicon-lightmode.png "A forest snail 🐌")
+![Du vil vel godt være med i hulen, Mulle?](client/public/images/content/skovsneglen.png "A forest snail 🐌")
 
 For Mulle to get access to the secret lair for the boys club Zappa, he has to log in to his account with the very secret password.
 Yes, it's something you can eat (If you ask Bjørn) 🐌 +1
