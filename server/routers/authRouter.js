@@ -49,10 +49,11 @@ router.post('/login', async (req, res) => {
                 }
 
                 // Generer JWT token
+                const expiryMinutes = process.env.JWT_EXPIRY_MINUTES || 1440; // Default: 24 timer
                 const token = jwt.sign(
                     { username: user.username, role: user.role },
                     JWT_SECRET,
-                    { expiresIn: '24h' }
+                    { expiresIn: `${expiryMinutes}m` }
                 );
 
                 // Send velkommen email ved første login
