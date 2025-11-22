@@ -9,7 +9,7 @@
     let loading = true;
     let error = null;
 
-    // Admin form state
+    // Admin form state variables
     let showCreateForm = false;
     let creating = false;
     let newMember = {
@@ -42,7 +42,6 @@
             const result = await response.json();
             members = result.data;
         } catch (err) {
-            // Check if it's a network error (token might be invalid)
             if (err.message.includes('Load failed') || err.message.includes('Failed to fetch')) {
                 toast.error('Din session er udløbet. Log venligst ind igen.');
                 auth.logout();

@@ -16,7 +16,7 @@ async function seedUsers() {
             const hashedPassword = await bcrypt.hash(user.password, config.saltRounds);
 
             db.run(
-                'INSERT OR REPLACE INTO users (username, password, email, role, first_login) VALUES (?, ?, ?, ?, 1)',
+                'INSERT OR REPLACE INTO users (username, password, email, role) VALUES (?, ?, ?, ?)',
                 [user.username, hashedPassword, user.email, user.role],
                 (err) => {
                     if (err) {

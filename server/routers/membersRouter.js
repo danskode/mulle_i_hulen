@@ -7,20 +7,21 @@ import { validatePassword, validateEmail, validateUsername, sanitizeString } fro
 
 const router = Router();
 
-// GET alle medlemmer - kræver JWT token
+//==== All member's route ====//
+
 router.get('/members', authenticateToken, (req, res) => {
     db.all('SELECT id, username, email, role, created_at FROM users ORDER BY created_at DESC', (err, users) => {
         if (err) {
             console.error('Database error:', err);
-            return res.status(500).send({ message: "Server fejl" });
+            return res.status(500).send({ message: "Serverfejl" });
         }
         res.send({ data: users });
     });
 });
 
-// POST opret nyt medlem - kun for ADMIN
+//==== Only ADMIN route ====//
+
 router.post('/members', authenticateToken, async (req, res) => {
-    // Tjek om brugeren er ADMIN
     if (req.user.role !== 'ADMIN') {
         return res.status(403).send({
             message: "Kun administratorer kan oprette nye medlemmer"
@@ -70,11 +71,11 @@ router.post('/members', authenticateToken, async (req, res) => {
         // Hash password
         const hashedPassword = await bcrypt.hash(password, config.saltRounds);
 
-        // Indsæt ny bruger i database
+        // Add user to database
         db.run(
-            'INSERT INTO users (username, email, password, role, first_login) VALUES (?, ?, ?, ?, 1)',
+            'INSERT INTO users (username, email, password, role) VALUES (?, ?, ?, ?)',
             [username, email, hashedPassword, role],
-            function(err) {
+            function (err) {
                 if (err) {
                     if (err.message.includes('UNIQUE constraint failed')) {
                         return res.status(400).send({
@@ -85,18 +86,18 @@ router.post('/members', authenticateToken, async (req, res) => {
                     return res.status(500).send({ message: "Server fejl" });
                 }
 
-                // Hent den nyoprettede bruger
+                // Get the new user's details
                 db.get(
                     'SELECT id, username, email, role, created_at FROM users WHERE id = ?',
                     [this.lastID],
                     (err, user) => {
                         if (err) {
                             console.error('Database error:', err);
-                            return res.status(500).send({ message: "Server fejl" });
+                            return res.status(500).send({ message: "Serverfejl" });
                         }
 
                         res.status(201).send({
-                            message: "Medlem oprettet succesfuldt",
+                            message: "Medlem oprettet",
                             data: user
                         });
                     }
@@ -105,7 +106,7 @@ router.post('/members', authenticateToken, async (req, res) => {
         );
     } catch (error) {
         console.error('Bcrypt error:', error);
-        return res.status(500).send({ message: "Server fejl" });
+        return res.status(500).send({ message: "Serverfejl" });
     }
 });
 

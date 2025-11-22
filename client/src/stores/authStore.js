@@ -1,27 +1,9 @@
-import { writable } from 'svelte/store';
+import { persistentStore } from '../lib/persistentStore.js';
 
-// Tjek om vi er i browseren
-const isBrowser = typeof window !== 'undefined';
+// Create persistent auth store
+const authStore = persistentStore('auth', null);
 
-// Hent evt. gemt auth data fra localStorage
-const storedAuth = isBrowser ? localStorage.getItem('auth') : null;
-const initialAuth = storedAuth ? JSON.parse(storedAuth) : null;
-
-// Opret store med initial værdi
-const authStore = writable(initialAuth);
-
-// Subscribe til ændringer og gem i localStorage
-if (isBrowser) {
-    authStore.subscribe(value => {
-        if (value) {
-            localStorage.setItem('auth', JSON.stringify(value));
-        } else {
-            localStorage.removeItem('auth');
-        }
-    });
-}
-
-// Helper funktioner
+// Helper functions to use in components and pages
 export const auth = {
     subscribe: authStore.subscribe,
 

@@ -1,4 +1,4 @@
-// Input validation utilities
+// Validation utilities to check input from users
 
 // Password requirements
 export const PASSWORD_MIN_LENGTH = 8;
@@ -9,11 +9,6 @@ export const PASSWORD_REQUIREMENTS = {
     requireNumber: true
 };
 
-/**
- * Validate password strength
- * @param {string} password - The password to validate
- * @returns {Object} { valid: boolean, message: string }
- */
 export function validatePassword(password) {
     if (!password || typeof password !== 'string') {
         return {
@@ -32,32 +27,27 @@ export function validatePassword(password) {
     if (PASSWORD_REQUIREMENTS.requireUppercase && !/[A-Z]/.test(password)) {
         return {
             valid: false,
-            message: 'Password skal indeholde mindst ét stort bogstav'
+            message: 'Password skal indeholde mininum et stort bogstav'
         };
     }
 
     if (PASSWORD_REQUIREMENTS.requireLowercase && !/[a-z]/.test(password)) {
         return {
             valid: false,
-            message: 'Password skal indeholde mindst ét lille bogstav'
+            message: 'Password skal indeholde mindst et lille bogstav'
         };
     }
 
     if (PASSWORD_REQUIREMENTS.requireNumber && !/[0-9]/.test(password)) {
         return {
             valid: false,
-            message: 'Password skal indeholde mindst ét tal'
+            message: 'Password skal indeholde minimum et tal'
         };
     }
 
     return { valid: true, message: 'Password er gyldigt' };
 }
 
-/**
- * Validate email format
- * @param {string} email - The email to validate
- * @returns {Object} { valid: boolean, message: string }
- */
 export function validateEmail(email) {
     if (!email || typeof email !== 'string') {
         return {
@@ -79,11 +69,6 @@ export function validateEmail(email) {
     return { valid: true, message: 'Email er gyldig' };
 }
 
-/**
- * Validate username
- * @param {string} username - The username to validate
- * @returns {Object} { valid: boolean, message: string }
- */
 export function validateUsername(username) {
     if (!username || typeof username !== 'string') {
         return {
@@ -92,16 +77,16 @@ export function validateUsername(username) {
         };
     }
 
-    const trimmed = username.trim();
+    const trimmedUsername = username.trim();
 
-    if (trimmed.length < 3) {
+    if (trimmedUsername.length < 3) {
         return {
             valid: false,
             message: 'Brugernavn skal være mindst 3 tegn'
         };
     }
 
-    if (trimmed.length > 30) {
+    if (trimmedUsername.length > 30) {
         return {
             valid: false,
             message: 'Brugernavn må højst være 30 tegn'
@@ -109,7 +94,7 @@ export function validateUsername(username) {
     }
 
     // Only allow alphanumeric characters, underscore, and hyphen
-    if (!/^[a-zA-Z0-9_-]+$/.test(trimmed)) {
+    if (!/^[a-zA-Z0-9_-]+$/.test(trimmedUsername)) {
         return {
             valid: false,
             message: 'Brugernavn må kun indeholde bogstaver, tal, _ og -'
@@ -119,11 +104,7 @@ export function validateUsername(username) {
     return { valid: true, message: 'Brugernavn er gyldigt' };
 }
 
-/**
- * Sanitize string input to prevent XSS
- * @param {string} input - The input to sanitize
- * @returns {string} Sanitized string
- */
+// Sanitize string input to prevent basic XSS and DOS attacks
 export function sanitizeString(input) {
     if (!input || typeof input !== 'string') {
         return '';

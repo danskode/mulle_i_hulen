@@ -27,16 +27,16 @@
                 throw new Error(result.message || 'Login fejlede');
             }
 
-            // Gem brugerdata og token i auth store
+            // Save user data and token in authStore
             auth.login(result.data);
 
-            toast.success(`Velkommen ${result.data.username}!`);
+            toast.success(`Velkommen i hulen, ${result.data.username}!`);
 
-            // Redirect til forsiden
+            // Redirect to home page ...
             navigate('/');
 
         } catch (err) {
-            toast.error(err.message || 'Login fejlede');
+            toast.error(err.message || 'Login fejlede - prøv igen senere');
         } finally {
             loading = false;
         }
@@ -62,5 +62,5 @@
 </form>
 
 <p>
-    <Link to="/forgot-password">Glemt password?</Link>
+    <Link to="/forgot-password">Har du glemt dit password?</Link>
 </p>

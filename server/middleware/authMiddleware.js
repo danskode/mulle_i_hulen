@@ -3,21 +3,21 @@ import { JWT_SECRET } from '../config/auth.js';
 
 export const authenticateToken = (req, res, next) => {
     const authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.split(' ')[1]; // Format: "Bearer TOKEN"
+    const token = authHeader && authHeader.split(' ')[1];
 
     if (!token) {
         return res.status(401).send({
-            message: "Adgang nægtet. Ingen token fundet."
+            message: "Du har ikke adgang uden en token, du!"
         });
     }
 
     try {
         const verified = jwt.verify(token, JWT_SECRET);
-        req.user = verified; // Tilføj brugerdata til request object
+        req.user = verified;
         next();
     } catch (err) {
         return res.status(403).send({
-            message: "Ugyldig eller udløbet token"
+            message: "Ugyldig token"
         });
     }
 };

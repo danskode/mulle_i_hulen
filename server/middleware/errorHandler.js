@@ -1,10 +1,11 @@
-// Global error handler middleware
+//==== Global error handler middleware ====//
+
 export const errorHandler = (err, req, res, next) => {
     console.error('Error:', err);
 
     // Default error
     let status = 500;
-    let message = 'Server fejl';
+    let message = 'Serverfejl';
 
     // JWT errors
     if (err.name === 'JsonWebTokenError') {

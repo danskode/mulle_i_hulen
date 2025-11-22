@@ -42,7 +42,6 @@
 {#if emailSent}
     <div class="success-message">
         <p>Et reset link er blevet sendt til din email!</p>
-        <p>Tjek din inbox (eller server/emails/ mappen i development).</p>
         <Link to="/login">Tilbage til login</Link>
     </div>
 {:else}
@@ -56,7 +55,7 @@
                 id="email"
                 bind:value={email}
                 required
-                placeholder="din@email.com"
+                placeholder="din@email.dk"
             />
         </div>
 
