@@ -21,6 +21,7 @@
 
     async function loadMembers() {
         loading = true;
+        error = null;
         try {
             const response = await fetch(`${$BASE_URL}/api/members`, {
                 headers: {
@@ -41,6 +42,13 @@
             const result = await response.json();
             members = result.data;
         } catch (err) {
+            // Check if it's a network error (token might be invalid)
+            if (err.message.includes('Load failed') || err.message.includes('Failed to fetch')) {
+                toast.error('Din session er udløbet. Log venligst ind igen.');
+                auth.logout();
+                navigate('/login');
+                return;
+            }
             error = err.message;
         } finally {
             loading = false;
@@ -60,6 +68,14 @@
                 },
                 body: JSON.stringify(newMember)
             });
+
+            // Check for auth errors before parsing JSON
+            if (response.status === 401 || response.status === 403) {
+                toast.error('Din session er udløbet. Log venligst ind igen.');
+                auth.logout();
+                navigate('/login');
+                return;
+            }
 
             const result = await response.json();
 

@@ -1,12 +1,11 @@
 import db from './db.js';
 import bcrypt from 'bcrypt';
-
-const SALT_ROUNDS = 10;
+import { config } from '../config/config.js';
 
 const users = [
-    { username: 'bjorn', password: '1234', email: 'bjorn@zappa.club', role: 'ADMIN' },
-    { username: 'steen', password: '1234', email: 'steen@zappa.club', role: 'USER' },
-    { username: 'mulle', password: '1234', email: 'mulle@zappa.club', role: 'PROSPECT' }
+    { username: 'bjorn', password: 'Skovsnegl1', email: 'bjorn@zappa.club', role: 'ADMIN' },
+    { username: 'steen', password: 'Skovsnegl1', email: 'steen@zappa.club', role: 'USER' },
+    { username: 'mulle', password: 'Skovsnegl1', email: 'mulle@zappa.club', role: 'PROSPECT' }
 ];
 
 async function seedUsers() {
@@ -14,7 +13,7 @@ async function seedUsers() {
 
     for (const user of users) {
         try {
-            const hashedPassword = await bcrypt.hash(user.password, SALT_ROUNDS);
+            const hashedPassword = await bcrypt.hash(user.password, config.saltRounds);
 
             db.run(
                 'INSERT OR REPLACE INTO users (username, password, email, role, first_login) VALUES (?, ?, ?, ?, 1)',
