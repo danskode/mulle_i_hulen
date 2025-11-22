@@ -1,7 +1,7 @@
 # Mulle i hulen
 
 For Mulle to get access to the secret lair for the boys club Zappa, he has to log in to his account with the very secret password.
-Yes, it's something you can eat 🐌🐌🐌
+Yes, it's something you can eat (If you ask Bjørn) 🐌 +1
 
 ## How to run locally
 
@@ -11,4 +11,5 @@ Yes, it's something you can eat 🐌🐌🐌
 4. `cd ..`
 5. `cd server`
 6. `npm i`
-7. Run the command `npm run dev` from the root folder and concurrently and the script will take care of starting both **client** and **server**.
+7. Run `node database/seed.js` to add sqlite database and dummy data into users table
+7. You are ready to join the Hulen: Run the command `npm run dev` from the root folder and concurrently and the script will take care of starting both **client** and **server**.
