@@ -25,6 +25,8 @@ function initDatabase() {
             email TEXT,
             role TEXT NOT NULL,
             first_login INTEGER DEFAULT 1,
+            reset_token TEXT,
+            reset_token_expires DATETIME,
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP
         )
     `, (err) => {
@@ -32,13 +34,52 @@ function initDatabase() {
             console.error('Error creating users table:', err);
         } else {
             console.log('Users table ready');
-
-            // Tilføj email og first_login kolonner hvis de ikke findes (migration)
-            db.run(`ALTER TABLE users ADD COLUMN email TEXT`, () => {});
-            db.run(`ALTER TABLE users ADD COLUMN first_login INTEGER DEFAULT 1`, () => {});
-            db.run(`ALTER TABLE users ADD COLUMN reset_token TEXT`, () => {});
-            db.run(`ALTER TABLE users ADD COLUMN reset_token_expires DATETIME`, () => {});
+            runMigrations();
         }
+    });
+}
+
+// Run database migrations with proper checks
+function runMigrations() {
+    // Check existing columns
+    db.all("PRAGMA table_info(users)", (err, columns) => {
+        if (err) {
+            console.error('Error checking table schema:', err);
+            return;
+        }
+
+        const columnNames = columns.map(col => col.name);
+
+        // Add missing columns if they don't exist
+        if (!columnNames.includes('email')) {
+            console.log('Adding email column...');
+            db.run(`ALTER TABLE users ADD COLUMN email TEXT`, (err) => {
+                if (err) console.error('Error adding email column:', err);
+            });
+        }
+
+        if (!columnNames.includes('first_login')) {
+            console.log('Adding first_login column...');
+            db.run(`ALTER TABLE users ADD COLUMN first_login INTEGER DEFAULT 1`, (err) => {
+                if (err) console.error('Error adding first_login column:', err);
+            });
+        }
+
+        if (!columnNames.includes('reset_token')) {
+            console.log('Adding reset_token column...');
+            db.run(`ALTER TABLE users ADD COLUMN reset_token TEXT`, (err) => {
+                if (err) console.error('Error adding reset_token column:', err);
+            });
+        }
+
+        if (!columnNames.includes('reset_token_expires')) {
+            console.log('Adding reset_token_expires column...');
+            db.run(`ALTER TABLE users ADD COLUMN reset_token_expires DATETIME`, (err) => {
+                if (err) console.error('Error adding reset_token_expires column:', err);
+            });
+        }
+
+        console.log('Database migrations completed');
     });
 }
 

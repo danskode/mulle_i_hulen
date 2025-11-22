@@ -28,8 +28,8 @@
             return;
         }
 
-        if (newPassword.length < 4) {
-            toast.error('Password skal være mindst 4 tegn');
+        if (newPassword.length < 8) {
+            toast.error('Password skal være mindst 8 tegn med stort bogstav, lille bogstav og tal');
             return;
         }
 
@@ -73,7 +73,8 @@
             id="newPassword"
             bind:value={newPassword}
             required
-            placeholder="Minimum 4 tegn"
+            minlength="8"
+            placeholder="Min 8 tegn, inkl. stort bogstav, lille bogstav og tal"
         />
     </div>
 
@@ -84,6 +85,7 @@
             id="confirmPassword"
             bind:value={confirmPassword}
             required
+            minlength="8"
             placeholder="Gentag password"
         />
     </div>

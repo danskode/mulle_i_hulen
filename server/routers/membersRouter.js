@@ -2,6 +2,8 @@ import { Router } from 'express';
 import { authenticateToken } from '../middleware/authMiddleware.js';
 import bcrypt from 'bcrypt';
 import db from '../database/db.js';
+import { config } from '../config/config.js';
+import { validatePassword, validateEmail, validateUsername, sanitizeString } from '../utils/validators.js';
 
 const router = Router();
 
@@ -25,23 +27,40 @@ router.post('/members', authenticateToken, async (req, res) => {
         });
     }
 
-    const { username, email, password, role } = req.body;
+    let { username, email, password, role } = req.body;
 
-    // Valider input
-    if (!username || !email || !password || !role) {
+    // Sanitize inputs
+    username = sanitizeString(username);
+    email = sanitizeString(email);
+    role = sanitizeString(role);
+
+    // Validate username
+    const usernameValidation = validateUsername(username);
+    if (!usernameValidation.valid) {
         return res.status(400).send({
-            message: "Brugernavn, email, password og rolle er påkrævet"
+            message: usernameValidation.message
         });
     }
 
-    if (password.length < 4) {
+    // Validate email
+    const emailValidation = validateEmail(email);
+    if (!emailValidation.valid) {
         return res.status(400).send({
-            message: "Password skal være mindst 4 tegn"
+            message: emailValidation.message
         });
     }
 
+    // Validate password
+    const passwordValidation = validatePassword(password);
+    if (!passwordValidation.valid) {
+        return res.status(400).send({
+            message: passwordValidation.message
+        });
+    }
+
+    // Validate role
     const validRoles = ['ADMIN', 'USER', 'PROSPECT'];
-    if (!validRoles.includes(role)) {
+    if (!role || !validRoles.includes(role)) {
         return res.status(400).send({
             message: "Ugyldig rolle. Vælg mellem: ADMIN, USER, PROSPECT"
         });
@@ -49,7 +68,7 @@ router.post('/members', authenticateToken, async (req, res) => {
 
     try {
         // Hash password
-        const hashedPassword = await bcrypt.hash(password, 10);
+        const hashedPassword = await bcrypt.hash(password, config.saltRounds);
 
         // Indsæt ny bruger i database
         db.run(

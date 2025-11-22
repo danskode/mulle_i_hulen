@@ -2,16 +2,45 @@ import { Router } from 'express';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import crypto from 'crypto';
+import rateLimit from 'express-rate-limit';
 import db from '../database/db.js';
 import emailService from '../services/emailService.js';
+import { JWT_SECRET, JWT_EXPIRY } from '../config/auth.js';
+import { config } from '../config/config.js';
+import { validatePassword, validateEmail, sanitizeString } from '../utils/validators.js';
 
 const router = Router();
 
-// JWT Secret (i produktion: brug environment variable!)
-const JWT_SECRET = "din_super_hemmelige_jwt_nøgle_2024";
+// Rate limiters for brute force protection
+const loginLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 5, // 5 attempts per window
+    message: { message: "For mange login forsøg. Prøv igen om 15 minutter." },
+    standardHeaders: true,
+    legacyHeaders: false
+});
 
-router.post('/login', async (req, res) => {
-    const { username, password } = req.body;
+const forgotPasswordLimiter = rateLimit({
+    windowMs: 60 * 60 * 1000, // 1 hour
+    max: 3, // 3 attempts per window
+    message: { message: "For mange password reset forsøg. Prøv igen om 1 time." },
+    standardHeaders: true,
+    legacyHeaders: false
+});
+
+const resetPasswordLimiter = rateLimit({
+    windowMs: 60 * 60 * 1000, // 1 hour
+    max: 5, // 5 attempts per window
+    message: { message: "For mange password reset forsøg. Prøv igen om 1 time." },
+    standardHeaders: true,
+    legacyHeaders: false
+});
+
+router.post('/login', loginLimiter, async (req, res) => {
+    let { username, password } = req.body;
+
+    // Sanitize inputs
+    username = sanitizeString(username);
 
     // Valider input
     if (!username || !password) {
@@ -49,11 +78,10 @@ router.post('/login', async (req, res) => {
                 }
 
                 // Generer JWT token
-                const expiryMinutes = process.env.JWT_EXPIRY_MINUTES || 1440; // Default: 24 timer
                 const token = jwt.sign(
                     { username: user.username, role: user.role },
                     JWT_SECRET,
-                    { expiresIn: `${expiryMinutes}m` }
+                    { expiresIn: JWT_EXPIRY }
                 );
 
                 // Send velkommen email ved første login
@@ -91,12 +119,17 @@ router.post('/login', async (req, res) => {
 });
 
 // Forgot password - generer reset token
-router.post('/forgot-password', (req, res) => {
-    const { email } = req.body;
+router.post('/forgot-password', forgotPasswordLimiter, (req, res) => {
+    let { email } = req.body;
 
-    if (!email) {
+    // Sanitize input
+    email = sanitizeString(email);
+
+    // Validate email
+    const emailValidation = validateEmail(email);
+    if (!emailValidation.valid) {
         return res.status(400).send({
-            message: "Email er påkrævet"
+            message: emailValidation.message
         });
     }
 
@@ -116,7 +149,7 @@ router.post('/forgot-password', (req, res) => {
 
         // Generer reset token
         const resetToken = crypto.randomBytes(32).toString('hex');
-        const resetTokenExpires = new Date(Date.now() + 3600000); // 1 time
+        const resetTokenExpires = new Date(Date.now() + config.resetTokenExpiryHours * 60 * 60 * 1000);
 
         // Gem token i database
         db.run(
@@ -160,7 +193,7 @@ Zappa Klubben
 });
 
 // Reset password med token
-router.post('/reset-password', async (req, res) => {
+router.post('/reset-password', resetPasswordLimiter, async (req, res) => {
     const { token, newPassword } = req.body;
 
     if (!token || !newPassword) {
@@ -169,9 +202,11 @@ router.post('/reset-password', async (req, res) => {
         });
     }
 
-    if (newPassword.length < 4) {
+    // Validate password strength
+    const passwordValidation = validatePassword(newPassword);
+    if (!passwordValidation.valid) {
         return res.status(400).send({
-            message: "Password skal være mindst 4 tegn"
+            message: passwordValidation.message
         });
     }
 
@@ -193,7 +228,7 @@ router.post('/reset-password', async (req, res) => {
 
             try {
                 // Hash nyt password
-                const hashedPassword = await bcrypt.hash(newPassword, 10);
+                const hashedPassword = await bcrypt.hash(newPassword, config.saltRounds);
 
                 // Opdater password og clear reset token
                 db.run(
@@ -219,4 +254,3 @@ router.post('/reset-password', async (req, res) => {
 });
 
 export default router;
-export { JWT_SECRET };

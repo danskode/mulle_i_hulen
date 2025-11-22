@@ -21,13 +21,14 @@
     });
 
     function checkAuth() {
-        auth.subscribe(value => {
+        const unsubscribe = auth.subscribe(value => {
             if (!value) {
                 toast.error('Du skal være logget ind for at se denne side');
                 navigate('/login', { replace: true });
             }
             hasChecked = true;
-        })();
+        });
+        unsubscribe();
     }
 </script>
 

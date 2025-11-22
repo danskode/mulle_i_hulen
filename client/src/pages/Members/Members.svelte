@@ -136,8 +136,8 @@
                         id="password"
                         bind:value={newMember.password}
                         required
-                        minlength="4"
-                        placeholder="Mindst 4 tegn"
+                        minlength="8"
+                        placeholder="Min 8 tegn, inkl. stort bogstav, lille bogstav og tal"
                     />
                 </div>
 

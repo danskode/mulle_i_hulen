@@ -35,9 +35,10 @@ export const auth = {
 
     getToken: () => {
         let token = null;
-        authStore.subscribe(value => {
+        const unsubscribe = authStore.subscribe(value => {
             if (value) token = value.token;
-        })();
+        });
+        unsubscribe();
         return token;
     }
 };

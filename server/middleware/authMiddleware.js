@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import { JWT_SECRET } from '../routers/authRouter.js';
+import { JWT_SECRET } from '../config/auth.js';
 
 export const authenticateToken = (req, res, next) => {
     const authHeader = req.headers['authorization'];
