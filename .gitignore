@@ -27,3 +27,11 @@ dist-ssr
 # My exclusions
 specs.md
 *.rest
+.env
+
+# Database
+*.db
+*.db-journal
+
+# Email logs
+server/emails/

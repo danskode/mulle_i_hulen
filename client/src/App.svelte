@@ -1,47 +1,32 @@
 <script>
-  import svelteLogo from './assets/svelte.svg'
-  import viteLogo from '/vite.svg'
-  import Counter from './lib/Counter.svelte'
+  import { Router, Route } from 'svelte-routing';
+  import { Toaster } from 'svelte-sonner';
+  import Home from './pages/Home/Home.svelte';
+  import Members from './pages/Members/Members.svelte';
+  import Login from './pages/Login/Login.svelte';
+  import ForgotPassword from './pages/ForgotPassword/ForgotPassword.svelte';
+  import ResetPassword from './pages/ResetPassword/ResetPassword.svelte';
+  import PrivateRoute from './components/PrivateRoute.svelte';
+  import Header from './components/Header.svelte';
+  import Footer from './components/Footer.svelte';
 </script>
 
-<main>
-  <div>
-    <a href="https://vite.dev" target="_blank" rel="noreferrer">
-      <img src={viteLogo} class="logo" alt="Vite Logo" />
-    </a>
-    <a href="https://svelte.dev" target="_blank" rel="noreferrer">
-      <img src={svelteLogo} class="logo svelte" alt="Svelte Logo" />
-    </a>
-  </div>
-  <h1>Vite + Svelte</h1>
+<Toaster />
 
-  <div class="card">
-    <Counter />
-  </div>
+<Router>
+  <Header />
 
-  <p>
-    Check out <a href="https://github.com/sveltejs/kit#readme" target="_blank" rel="noreferrer">SvelteKit</a>, the official Svelte app framework powered by Vite!
-  </p>
+  <main>
+    <Route path='/'><Home /></Route>
+    <Route path='/members'>
+      <PrivateRoute>
+        <Members />
+      </PrivateRoute>
+    </Route>
+    <Route path='/login'><Login /></Route>
+    <Route path='/forgot-password'><ForgotPassword /></Route>
+    <Route path='/reset-password'><ResetPassword /></Route>
+  </main>
 
-  <p class="read-the-docs">
-    Click on the Vite and Svelte logos to learn more
-  </p>
-</main>
-
-<style>
-  .logo {
-    height: 6em;
-    padding: 1.5em;
-    will-change: filter;
-    transition: filter 300ms;
-  }
-  .logo:hover {
-    filter: drop-shadow(0 0 2em #646cffaa);
-  }
-  .logo.svelte:hover {
-    filter: drop-shadow(0 0 2em #ff3e00aa);
-  }
-  .read-the-docs {
-    color: #888;
-  }
-</style>
+  <Footer />
+</Router>
