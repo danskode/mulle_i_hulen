@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/png" href="/src/public/favicon-lightmode.png" id="favicon" />
+    <link rel="icon" type="image/png" href="/favicon-lightmode.png" id="favicon" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Hulen</title>
     <script>
@@ -11,8 +11,8 @@
         const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
         const favicon = document.getElementById('favicon');
         favicon.href = isDark
-          ? '/src/public/favicon-darkmode.png'
-          : '/src/public/favicon-lightmode.png';
+          ? '/favicon-darkmode.png'
+          : '/favicon-lightmode.png';
       };
 
       // Opdater favicon ved load

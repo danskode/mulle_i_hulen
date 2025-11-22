@@ -22,7 +22,7 @@
     toast.success('Du er nu logget ud');
   }
 
-  const logoSrc = $derived(isDarkMode ? '/src/public/favicon-darkmode.png' : '/src/public/favicon-lightmode.png');
+  const logoSrc = $derived(isDarkMode ? '/favicon-darkmode.png' : '/favicon-lightmode.png');
 </script>
 
 <header>
